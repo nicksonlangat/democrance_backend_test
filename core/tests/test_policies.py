@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -18,7 +20,15 @@ class PolicyApiTests(TestCase):
             date_of_birth="1990-01-01",
         )
 
-        self.create_policy_url = reverse("quote")
+        self.quote = Policy.objects.create(
+            customer=self.customer,
+            policy_type="motor",
+            coverage_amount=10000,
+            start_date=datetime.strptime("2024-09-12", "%Y-%m-%d").date(),
+        )
+        self.update_quote_url = reverse("quote-update", kwargs={"pk": self.quote.id})
+
+        self.create_quote_url = reverse("quote")
 
     def test_create_policy_with_valid_data(self):
         data = {
@@ -28,11 +38,11 @@ class PolicyApiTests(TestCase):
             "start_date": "2024-01-01",
         }
 
-        response = self.client.post(self.create_policy_url, data, format="json")
+        response = self.client.post(self.create_quote_url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Policy.objects.count(), 1)
-        policy = Policy.objects.get()
+        self.assertEqual(Policy.objects.filter(policy_type="health").count(), 1)
+        policy = Policy.objects.filter(policy_type="health").last()
         self.assertEqual(policy.customer, self.customer)
         self.assertEqual(policy.policy_type, "health")
         self.assertEqual(str(policy.premium_amount), "1650000.00")
@@ -45,7 +55,15 @@ class PolicyApiTests(TestCase):
             "policy_type": "motor",
         }
 
-        response = self.client.post(self.create_policy_url, data, format="json")
+        response = self.client.post(self.create_quote_url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("coverage_amount", response.data)
+
+    def test_accept_quote_and_mark_active(self):
+        response = self.client.patch(self.update_quote_url, {"is_accepted": True})
+        print(response.json())
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.quote.refresh_from_db()
+        self.assertTrue(self.quote.is_accepted)
+        self.assertEqual(self.quote.status, "active")

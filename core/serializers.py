@@ -35,3 +35,12 @@ class PolicySerializer(serializers.ModelSerializer):
             "is_accepted",
         ]
         read_only_fields = ["id", "premium_amount", "policy_number", "end_date"]
+
+    def update(self, instance, validated_data):
+        # Mark the policy as accepted and change status to 'active'
+        if validated_data.get("is_accepted", instance.is_accepted):
+            instance.is_accepted = True
+            instance.status = Policy.PolicyStatus.ACTIVE
+
+        instance.save()
+        return instance

@@ -45,6 +45,7 @@ class Policy(BaseModel):
 
     class PolicyStatus(models.TextChoices):
         QUOTED = "quoted", "Quoted"
+        ACCEPTED = "accepted", "Accepted"
         ACTIVE = "active", "Active"
         EXPIRED = "expired", "Expired"
         CANCELLED = "cancelled", "Cancelled"
@@ -63,7 +64,6 @@ class Policy(BaseModel):
     status = models.CharField(
         max_length=10, choices=PolicyStatus.choices, default=PolicyStatus.QUOTED
     )
-    is_accepted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.policy_number} - {self.policy_type} for {self.customer}"
@@ -112,3 +112,12 @@ class Policy(BaseModel):
                 premium_to_pay *= Decimal("1.08")
 
         return premium_to_pay
+
+
+class PolicyHistory(BaseModel):
+    policy = models.ForeignKey(Policy, on_delete=models.CASCADE, related_name="history")
+    status = models.CharField(max_length=20, choices=Policy.PolicyStatus.choices)
+    changed_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.policy.policy_number} - {self.status} at {self.updated_at}"

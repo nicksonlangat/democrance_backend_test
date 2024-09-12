@@ -47,7 +47,6 @@ class PolicyApiTests(TestCase):
         self.assertEqual(policy.policy_type, "health")
         self.assertEqual(str(policy.premium_amount), "1650000.00")
         self.assertEqual(policy.status, "quoted")
-        self.assertFalse(policy.is_accepted)
 
     def test_create_policy_with_missing_fields(self):
         data = {
@@ -60,10 +59,21 @@ class PolicyApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("coverage_amount", response.data)
 
-    def test_accept_quote_and_mark_active(self):
-        response = self.client.patch(self.update_quote_url, {"is_accepted": True})
-        print(response.json())
+    def test_accept_quote(self):
+        response = self.client.patch(
+            self.update_quote_url, {"status": Policy.PolicyStatus.ACCEPTED}
+        )
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.quote.refresh_from_db()
-        self.assertTrue(self.quote.is_accepted)
+
+        self.assertEqual(self.quote.status, "accepted")
+
+    def test_pay_quote(self):
+        response = self.client.patch(
+            self.update_quote_url, {"status": Policy.PolicyStatus.ACTIVE}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.quote.refresh_from_db()
         self.assertEqual(self.quote.status, "active")

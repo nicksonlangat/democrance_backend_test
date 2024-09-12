@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Customer, Policy
+from .models import Customer, Policy, PolicyHistory
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -32,15 +32,23 @@ class PolicySerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
             "status",
-            "is_accepted",
         ]
         read_only_fields = ["id", "premium_amount", "policy_number", "end_date"]
 
-    def update(self, instance, validated_data):
-        # Mark the policy as accepted and change status to 'active'
-        if validated_data.get("is_accepted", instance.is_accepted):
-            instance.is_accepted = True
-            instance.status = Policy.PolicyStatus.ACTIVE
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["customer"] = CustomerSerializer(instance.customer).data
+        representation["has_expired"] = instance.has_expired
+        return representation
 
-        instance.save()
-        return instance
+
+class PolicyHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PolicyHistory
+        fields = ["policy", "status", "updated_at"]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["policy"] = PolicySerializer(instance.policy).data
+
+        return representation

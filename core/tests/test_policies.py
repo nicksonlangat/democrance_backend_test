@@ -26,9 +26,9 @@ class PolicyApiTests(TestCase):
             coverage_amount=10000,
             start_date=datetime.strptime("2024-09-12", "%Y-%m-%d").date(),
         )
-        self.update_quote_url = reverse("quote-update", kwargs={"pk": self.quote.id})
+        self.update_quote_url = reverse("quote-detail", kwargs={"pk": self.quote.id})
 
-        self.create_quote_url = reverse("quote")
+        self.create_quote_url = reverse("quote-create")
 
     def test_create_policy_with_valid_data(self):
         data = {

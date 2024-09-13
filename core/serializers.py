@@ -42,6 +42,15 @@ class PolicySerializer(serializers.ModelSerializer):
         return representation
 
 
+class PolicyReadOnlySerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    policy_number = serializers.CharField(read_only=True)
+    policy_type = serializers.CharField(read_only=True)
+    premium_amount = serializers.DecimalField(
+        max_digits=9, decimal_places=2, read_only=True
+    )
+
+
 class PolicyHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = PolicyHistory
@@ -49,6 +58,6 @@ class PolicyHistorySerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        # representation["policy"] = PolicySerializer(instance.policy).data
+        representation["policy"] = PolicyReadOnlySerializer(instance.policy).data
 
         return representation

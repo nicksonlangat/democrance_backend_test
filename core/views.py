@@ -8,12 +8,12 @@ from .serializers import CustomerSerializer, PolicyHistorySerializer, PolicySeri
 
 
 class CustomerCreateApi(APIView):
+    """
+    View to create new customers.
+    """
+
     permission_classes = [permissions.AllowAny]
     serializer_class = CustomerSerializer
-
-    # filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
-    # search_fields = ['first_name', 'last_name', 'email']
-    # filterset_fields = ['date_of_birth']
 
     def post(self, request):
         serializer = CustomerSerializer(data=request.data)
@@ -22,7 +22,16 @@ class CustomerCreateApi(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, pk=None, *args, **kwargs):
+
+class CustomerListApi(APIView):
+    """
+    View to list all customers and filter them.
+    """
+
+    permission_classes = [permissions.AllowAny]
+    serializer_class = CustomerSerializer
+
+    def get(self, request, *args, **kwargs):
         queryset = Customer.objects.all()
 
         first_name = request.query_params.get("first_name", None)
@@ -46,7 +55,11 @@ class CustomerCreateApi(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class PolicyApi(APIView):
+class PolicyCreateApi(APIView):
+    """
+    View to create new policies/quotes.
+    """
+
     permission_classes = [permissions.AllowAny]
     serializer_class = PolicySerializer
 
@@ -57,34 +70,47 @@ class PolicyApi(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class PolicyListApi(APIView):
+    """
+    View to list all policies and filter them.
+    """
+
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PolicySerializer
+
+    def get(self, request, *args, **kwargs):
+        policies = Policy.objects.select_related("customer")
+
+        customer_id = request.query_params.get("customer_id", None)
+        policy_type = request.query_params.get("policy_type", None)
+        policy_status = request.query_params.get("policy_status", None)
+
+        if customer_id:
+            policies = policies.filter(customer_id=customer_id)
+
+        if policy_status:
+            policies = policies.filter(policy_status__iexact=policy_status)
+
+        if policy_type:
+            policies = policies.filter(policy_type__iexact=policy_type)
+
+        serializer = PolicySerializer(policies, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PolicyDetailApi(APIView):
+    """
+    View to view a single policy or update it.
+    """
+
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PolicySerializer
+
     def get(self, request, pk=None, *args, **kwargs):
-        if pk:
-            policy = get_object_or_404(Policy, id=pk)
-            serializer = PolicySerializer(policy)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            customer_id = request.query_params.get("customer_id", None)
-            policy_type = request.query_params.get("policy_type", None)
-            policy_status = request.query_params.get("policy_status", None)
-            if customer_id:
-                policies = Policy.objects.filter(
-                    customer_id=customer_id
-                ).select_related("customer")
-            if policy_status:
-                policies = Policy.objects.filter(
-                    policy_status__iexact=policy_status
-                ).select_related("customer")
-
-            if policy_type:
-                policies = Policy.objects.filter(
-                    policy_type__iexact=policy_type
-                ).select_related("customer")
-
-            else:
-                policies = Policy.objects.select_related("customer")
-
-            serializer = PolicySerializer(policies, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        policy = get_object_or_404(Policy, id=pk)
+        serializer = PolicySerializer(policy)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, pk, *args, **kwargs):
         policy = get_object_or_404(Policy, id=pk)
@@ -96,7 +122,11 @@ class PolicyApi(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class PolicyHistoryApi(APIView):
+class PolicyHistoryListApi(APIView):
+    """
+    View to track status changes of a given policy.
+    """
+
     permission_classes = [permissions.AllowAny]
     serializer_class = PolicyHistorySerializer
 

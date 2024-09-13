@@ -6,6 +6,13 @@ You need the following installed on your system.
 - [Python](https://www.python.org/downloads/)
 - [PostgreSQL](https://www.postgresql.org/download/)
 
+### APPS AND MODULES
+The main project settings and configs is found in the `mysite` folder.
+The business logic is in the app called `core`
+To handles users, authentication and authorization, the app is `accounts`
+Shared utilities are found in the `common`
+Swagger documentation for all the API endpoints is found via `http://localhost:8000`
+
 To set up the codebase on your local machine, follow the steps below:
 
 - Clone [this repo ](https://github.com/nicksonlangat/democrance_backend_test.git) on to your desktop/project folder.

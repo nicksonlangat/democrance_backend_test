@@ -49,6 +49,6 @@ class PolicyHistorySerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation["policy"] = PolicySerializer(instance.policy).data
+        # representation["policy"] = PolicySerializer(instance.policy).data
 
         return representation

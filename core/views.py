@@ -3,8 +3,14 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from common.pagination import PageNumberPagination, get_paginated_response
+
 from .models import Customer, Policy, PolicyHistory
 from .serializers import CustomerSerializer, PolicyHistorySerializer, PolicySerializer
+
+
+class Pagination(PageNumberPagination):
+    page_size = 10
 
 
 class CustomerCreateApi(APIView):
@@ -51,8 +57,13 @@ class CustomerListApi(APIView):
         if date_of_birth:
             queryset = queryset.filter(date_of_birth__iexact=date_of_birth)
 
-        serializer = CustomerSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return get_paginated_response(
+            pagination_class=Pagination,
+            serializer_class=self.serializer_class,
+            queryset=queryset,
+            request=request,
+            view=self,
+        )
 
 
 class PolicyCreateApi(APIView):
@@ -95,8 +106,13 @@ class PolicyListApi(APIView):
         if policy_type:
             policies = policies.filter(policy_type__iexact=policy_type)
 
-        serializer = PolicySerializer(policies, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return get_paginated_response(
+            pagination_class=Pagination,
+            serializer_class=self.serializer_class,
+            queryset=policies,
+            request=request,
+            view=self,
+        )
 
 
 class PolicyDetailApi(APIView):
@@ -132,6 +148,12 @@ class PolicyHistoryListApi(APIView):
 
     def get(self, request, pk=None, *args, **kwargs):
         policy = get_object_or_404(Policy, id=pk)
-        history = PolicyHistory.objects.filter(policy=policy).select_related("policy")
-        serializer = PolicyHistorySerializer(history, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        qs = PolicyHistory.objects.filter(policy=policy).select_related("policy")
+
+        return get_paginated_response(
+            pagination_class=Pagination,
+            serializer_class=self.serializer_class,
+            queryset=qs,
+            request=request,
+            view=self,
+        )

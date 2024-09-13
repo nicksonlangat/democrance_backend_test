@@ -99,7 +99,7 @@ class PolicyApiTests(TestCase):
         response = self.client.get(self.policy_list_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data["results"]), 1)
 
     def test_filter_by_customer_id(self):
         """
@@ -111,8 +111,8 @@ class PolicyApiTests(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        for policy in response.data:
+        self.assertEqual(len(response.data["results"]), 1)
+        for policy in response.data["results"]:
             self.assertEqual(policy["customer"]["id"], self.customer.id)
 
     def test_filter_by_policy_type(self):
@@ -123,8 +123,8 @@ class PolicyApiTests(TestCase):
         response = self.client.get(self.policy_list_url, {"policy_type": "motor"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        for policy in response.data:
+        self.assertEqual(len(response.data["results"]), 1)
+        for policy in response.data["results"]:
             self.assertEqual(policy["policy_type"], "motor")
 
     def test_filter_by_policy_status(self):
@@ -135,8 +135,8 @@ class PolicyApiTests(TestCase):
         response = self.client.get(self.policy_list_url, {"policy_status": "quoted"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        for policy in response.data:
+        self.assertEqual(len(response.data["results"]), 1)
+        for policy in response.data["results"]:
             self.assertEqual(policy["status"], "quoted")
 
     def test_filter_by_multiple_parameters(self):
@@ -150,8 +150,8 @@ class PolicyApiTests(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["policy_type"], "motor")
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["policy_type"], "motor")
 
     def test_no_policies_found(self):
         """
@@ -161,7 +161,7 @@ class PolicyApiTests(TestCase):
         response = self.client.get(self.policy_list_url, {"policy_type": "new"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data["results"]), 0)
 
     def test_get_policy_history(self):
         """
@@ -171,5 +171,5 @@ class PolicyApiTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["status"], "quoted")
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["status"], "quoted")

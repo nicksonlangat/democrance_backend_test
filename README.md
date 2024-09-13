@@ -12,6 +12,7 @@ The business logic is in the app called `core`
 To handles users, authentication and authorization, the app is `accounts`
 Shared utilities are found in the `common`
 Swagger documentation for all the API endpoints is found via `http://localhost:8000`
+To run the tests issue `make test` or `export DJANGO_SETTINGS_MODULE=mysite.settings && pytest -vv`
 
 To set up the codebase on your local machine, follow the steps below:
 

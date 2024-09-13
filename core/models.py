@@ -115,6 +115,7 @@ class Policy(BaseModel):
 
     class Meta:
         verbose_name_plural = "Policies"
+        ordering = ["-updated_at"]
 
 
 class PolicyHistory(BaseModel):
@@ -127,3 +128,4 @@ class PolicyHistory(BaseModel):
 
     class Meta:
         verbose_name_plural = "Policy Status History"
+        ordering = ["-updated_at"]

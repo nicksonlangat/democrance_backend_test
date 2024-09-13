@@ -63,7 +63,7 @@ class CustomerApiTests(TestCase):
         response = self.client.get(self.customer_list_url)
         print(response.json())
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data["results"]), 2)
 
     def test_filter_by_first_name(self):
         """Test that customers can be filtered by first name."""
@@ -71,8 +71,8 @@ class CustomerApiTests(TestCase):
         response = self.client.get(self.customer_list_url, {"first_name": "Stewie"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["first_name"], "Stewie")
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["first_name"], "Stewie")
 
     def test_filter_by_last_name(self):
         """Test that customers can be filtered by last name."""
@@ -80,8 +80,8 @@ class CustomerApiTests(TestCase):
         response = self.client.get(self.customer_list_url, {"last_name": "Quagmire"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["last_name"], "Quagmire")
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["last_name"], "Quagmire")
 
     def test_filter_by_date_of_birth(self):
         """Test that customers can be filtered by date of birth."""
@@ -91,8 +91,8 @@ class CustomerApiTests(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["date_of_birth"], "1970-01-01")
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["date_of_birth"], "1970-01-01")
 
     def test_filter_by_email(self):
         """Test that customers can be filtered by email."""
@@ -102,8 +102,8 @@ class CustomerApiTests(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["email"], "stewie@gmail.com")
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["email"], "stewie@gmail.com")
 
     def test_filter_by_multiple_parameters(self):
         """Test that customers can be filtered by multiple parameters at once."""
@@ -113,8 +113,8 @@ class CustomerApiTests(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["first_name"], "Meg")
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["first_name"], "Meg")
 
     def test_no_customers_found(self):
         """Test that an empty list is returned if no customers match the filters."""
@@ -122,4 +122,4 @@ class CustomerApiTests(TestCase):
         response = self.client.get(self.customer_list_url, {"first_name": "Joe"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data["results"]), 0)

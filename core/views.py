@@ -26,9 +26,9 @@ class CustomerCreateApi(APIView):
         queryset = Customer.objects.all()
 
         first_name = request.query_params.get("first_name", None)
-        last_name = self.request.query_params.get("last_name", None)
-        email = self.request.query_params.get("email", None)
-        date_of_birth = self.request.query_params.get("date_of_birth", None)
+        last_name = request.query_params.get("last_name", None)
+        email = request.query_params.get("email", None)
+        date_of_birth = request.query_params.get("date_of_birth", None)
 
         if first_name:
             queryset = queryset.filter(first_name__iexact=first_name)
@@ -64,10 +64,22 @@ class PolicyApi(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             customer_id = request.query_params.get("customer_id", None)
+            policy_type = request.query_params.get("policy_type", None)
+            policy_status = request.query_params.get("policy_status", None)
             if customer_id:
                 policies = Policy.objects.filter(
                     customer_id=customer_id
                 ).select_related("customer")
+            if policy_status:
+                policies = Policy.objects.filter(
+                    policy_status__iexact=policy_status
+                ).select_related("customer")
+
+            if policy_type:
+                policies = Policy.objects.filter(
+                    policy_type__iexact=policy_type
+                ).select_related("customer")
+
             else:
                 policies = Policy.objects.select_related("customer")
 

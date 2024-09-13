@@ -30,7 +30,7 @@ To set up the codebase on your local machine, follow the steps below:
 
 1. Customer Creation
 - To create a customer, send a `POST` request to:
-`api/v1/create-customer`
+`api/v1/create-customer/`
 with the payload in the format below:
     ```js
     {
@@ -45,7 +45,7 @@ with the payload in the format below:
 
 2. Policy/Quote Creation
 - To create a quote for a customer, send a `POST` request to:
-`api/v1/quote`
+`api/v1/quote/`
 with the payload in the format below:
     ```js
     {
@@ -82,8 +82,36 @@ with the payload in the format below:
         "has_expired": false
     }
     ```
+3. Viewing A Policy/Quote
+- To view a quote, send a `GET` request to:
+`api/v1/quote/<id>/`
+ response will be:
 
-3. Accepting A Policy/Quote
+ ```js
+    {
+    "id": 17,
+    "policy_number": "8FEA8D92C5",
+    "customer": {
+        "id": 6,
+        "user": 6,
+        "first_name": "Roy",
+        "last_name": "Rotich",
+        "email": "roy@gmail.com",
+        "phone_number": "0712754946",
+        "date_of_birth": "1990-01-15",
+        "gender": "male"
+    },
+    "policy_type": "home",
+    "premium_amount": "162000.00",
+    "coverage_amount": "3000000.00",
+    "start_date": "2024-09-13",
+    "end_date": "2025-09-13",
+    "status": "quoted",
+    "has_expired": false
+    }
+ ```
+
+4. Accepting A Policy/Quote
 - To accept a quote, send a `PATCH` request to:
 `api/v1/quote/<id>/`
 with the payload in the format below:
@@ -95,7 +123,7 @@ with the payload in the format below:
     ```
    The response will show that the Policy status changed from `quoted` to `accepted`
 
-4. Activating A Policy/Quote
+5. Activating A Policy/Quote
 - To convert a quote into a live policy, send a `PATCH` request to:
 `api/v1/quote/<id>/`
 with the payload in the format below:
@@ -107,7 +135,7 @@ with the payload in the format below:
    The assumption is that payment will be invoiced to the customer at a later date.
    The response will show that the Policy status changed from `accepted` to `active`
 
-5. Policy/Quote Status History
+6. Policy/Quote Status History
 - To view status history of a policy, send a `GET` request to:
  `api/v1/policies/<id>/history/`
 And the response will look like:
@@ -146,7 +174,7 @@ And the response will look like:
     }
     ]
     ```
-6. List All Policies
+7. List All Policies
 - To view all policies, send a `GET` request to:
  `api/v1/policies/`
 And the response will look like:
@@ -176,7 +204,7 @@ And the response will look like:
     ]
     ```
 
-7. List All Policies For A Customer
+8. List All Policies For A Customer
 - To view all policies for a customer, send a `GET` request to:
  `api/v1/policies/?customer_id=id`
 And the response will look like:
@@ -206,9 +234,12 @@ And the response will look like:
     ]
     ```
 
+9. Filter/Search Policies
+- To filter/search polices, send a `GET` request to:
+ `api/v1/policies/?policy_status=status` or
+  `api/v1/policies/?policy_type=type` or
 
-
-9. List All Customers
+10. List All Customers
 - To view all customers, send a `GET` request to:
  `api/v1/customers/`
 And the response will look like:
@@ -227,7 +258,7 @@ And the response will look like:
     ]
     ```
 
-10. Filter/Search  Customers
+11. Filter/Search  Customers
 - To filter/search customers, send a `GET` request with the query_params to:
  `api/v1/customers/?first_name=name` or
  `api/v1/customers/?last_name=name` or

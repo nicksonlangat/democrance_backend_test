@@ -15,7 +15,6 @@ urlpatterns = [
     path("quote/", PolicyCreateApi.as_view(), name="quote-create"),
     path("quote/<int:pk>/", PolicyDetailApi.as_view(), name="quote-detail"),
     path("policies/", PolicyListApi.as_view(), name="policy-list"),
-    path("policies/<int:pk>/", PolicyDetailApi.as_view(), name="policy-detail"),
     path(
         "policies/<int:pk>/history/",
         PolicyHistoryListApi.as_view(),

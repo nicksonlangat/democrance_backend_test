@@ -113,6 +113,9 @@ class Policy(BaseModel):
 
         return premium_to_pay
 
+    class Meta:
+        verbose_name_plural = "Policies"
+
 
 class PolicyHistory(BaseModel):
     policy = models.ForeignKey(Policy, on_delete=models.CASCADE, related_name="history")
@@ -121,3 +124,6 @@ class PolicyHistory(BaseModel):
 
     def __str__(self):
         return f"{self.policy.policy_number} - {self.status} at {self.updated_at}"
+
+    class Meta:
+        verbose_name_plural = "Policy Status History"

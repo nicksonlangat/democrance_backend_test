@@ -90,7 +90,7 @@ class PolicyListApi(APIView):
             policies = policies.filter(customer_id=customer_id)
 
         if policy_status:
-            policies = policies.filter(policy_status__iexact=policy_status)
+            policies = policies.filter(status__iexact=policy_status)
 
         if policy_type:
             policies = policies.filter(policy_type__iexact=policy_type)

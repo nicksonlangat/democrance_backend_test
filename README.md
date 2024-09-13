@@ -1,3 +1,5 @@
+![democrance api](https://github.com/nicksonlangat/democrance_backend_test/actions/workflows/tests.yml/badge.svg)
+
 ### PROJECT DETAILS
 This repo hosts the codebase for democrance backend test which is an API backend for managing customers and customer policies/quotes.
 
